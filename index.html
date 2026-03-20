@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SUM-MIT Survey — Small Business Netherlands</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://zpopbskjeixijaejtoih.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_dbkELrIa_JQtG57Pp8NIiA_zZjrEpzb";
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -891,7 +897,7 @@ document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach
 // ──────────────────────────────────────────────
 // FORM SUBMISSION — SAVES TO LOCALSTORAGE ✅
 // ──────────────────────────────────────────────
-document.getElementById('survey-form').addEventListener('submit', function(e) {
+document.getElementById('survey-form').addEventListener('submit', async function(e) {
   e.preventDefault();
 
   let valid = true;
@@ -927,14 +933,20 @@ document.getElementById('survey-form').addEventListener('submit', function(e) {
 
   // ── SAVE TO LOCALSTORAGE (feeds the dashboard) ──
   try {
-    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    existing.push(data);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-    console.log('✅ Response saved. Total responses:', existing.length);
-  } catch(err) {
-    console.error('Storage error:', err);
+  const { error } = await supabaseClient.from("Responses").insert([data]);
+
+  if (error) {
+    console.error("Supabase insert error:", error);
+    alert("Submission failed. Please try again.");
+    return;
   }
 
+  console.log("✅ Response saved to Supabase");
+} catch (err) {
+  console.error("Supabase storage error:", err);
+  alert("Submission failed. Please try again.");
+  return;
+}
   // ── SHOW THANK YOU ──
   document.getElementById('survey-form').style.display = 'none';
   document.querySelectorAll('.section-label').forEach(s => s.style.display = 'none');
