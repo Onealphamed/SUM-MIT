@@ -933,7 +933,7 @@ document.getElementById('survey-form').addEventListener('submit', async function
 
   // ── SAVE TO LOCALSTORAGE (feeds the dashboard) ──
   try {
-  const { error } = await supabaseClient.from("Responses").insert([data]);
+  const { error } = await supabaseClient.from("responses").insert([data]);
 
   if (error) {
     console.error("Supabase insert error:", error);
