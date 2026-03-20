@@ -383,7 +383,7 @@ function tryLogin() {
 async function loadData() {
   try {
     const { data, error } = await supabaseClient
-      .from("Responses")
+      .from("responses")
       .select("*")
       .order("created_at", { ascending: false });
 
